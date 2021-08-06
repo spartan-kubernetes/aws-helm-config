@@ -1,0 +1,10 @@
+replicaCount: 1
+
+serviceAccount:
+  controller:
+    annotations:
+      # This value should match the ARN of the role created by module.iam_assumable_role_admin in irsa.tf
+      eks.amazonaws.com/role-arn: "arn:aws:iam::898896572867:role/efs-storage-controller"
+    create: true
+    # This value should match local.k8s_service_account_name in locals.tf
+    name: efs-csi-controller-sa

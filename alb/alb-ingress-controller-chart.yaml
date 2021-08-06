@@ -1,0 +1,15 @@
+clusterName: k8s-std
+region: us-east-2
+
+rbac:
+  create: true
+
+serviceAccount:
+  annotations:
+    # This value should match the ARN of the role created by module.iam_assumable_role_admin in irsa.tf
+    eks.amazonaws.com/role-arn: "arn:aws:iam::898896572867:role/loadbalancer-ingress-controller"
+  create: true
+  # This value should match local.k8s_service_account_name in locals.tf
+  name: loadbalancer-ingress-controller-sa
+
+vpcId: "vpc-081670a90dc5b6ace"
