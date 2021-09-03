@@ -1,0 +1,60 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: storage
+  labels:
+    type: storage-namespace
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: storage-headless
+  namespace: storage
+  labels:
+    type: storage-service
+spec:
+  clusterIP: None
+  selector:
+    type: storage-pod
+  ports:
+    - port: 80
+      name: http
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: storage-deploy
+  namespace: storage
+  labels:
+    type: storage-stateful
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      type: storage-pod
+  serviceName: storage-headless
+  template:
+    metadata:
+      name: storage-pod
+      namespace: storage
+      labels:
+        type: storage-pod
+    spec:
+      containers:
+        - name: nginx-container
+          image: nginx:latest
+          volumeMounts:
+            - mountPath: /var/log/nginx
+              name: storage-example
+  volumeClaimTemplates:
+    - metadata:
+        name: storage-example
+      spec:
+        resources:
+          requests:
+            storage: 1M
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: efs-sc
